@@ -1,16 +1,33 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class QuizManager : MonoBehaviour
 {
+    public TextMeshProUGUI scoreText;
     public List<string> Questions;
     public Hashtable QuestionAnswers;
     public QuestionDisplay whiteBoard;
+    public int currentQuestionindex;
+    private int shuffledCurrentQuestionIndex;
+    private string currentQuestionString;
+    public int score;
+    private List<int> shuffledIndices;
+
+    public GameObject finalCanvas;
 
     // Start is called before the first frame update
     void Start()
     {
+        finalCanvas.SetActive(false);
+        currentQuestionindex = 0;
+        score = 0;
         QuestionAnswers = new Hashtable();
 
         Questions.Add("Which number is equivalent to 3^4 / 3^2?"); //9
@@ -23,22 +40,74 @@ public class QuizManager : MonoBehaviour
         Questions.Add("4 friends entered a maths quiz. One answered one over five of the maths questions, one answered one over ten​, one answered one over four​, and the other answered four over twenty-five.​. What percentage of the questions did they answer altogether?"); //71
         Questions.Add("I have 20 sweets. If I share them equally with my friends, there are 2 left over. If one more person joins us, there are 6 sweets left. How many people total?"); // 6
 
-        QuestionAnswers.Add(Questions[0], new List<float> { 3, 9, 27, 16 });
-        QuestionAnswers.Add(Questions[1], new List<float> { 36, 40, 42, 44 });
-        QuestionAnswers.Add(Questions[2], new List<float> { 50, 38, 46, 41 });
-        QuestionAnswers.Add(Questions[3], new List<float> { 0.60f, 0.64f, 0.65f, 0.66f });
-        QuestionAnswers.Add(Questions[4], new List<float> { 100, 50, 49, 99 });
-        QuestionAnswers.Add(Questions[5], new List<float> { 20, 22, 24, 23 });
-        QuestionAnswers.Add(Questions[6], new List<float> { 21, 12, 10, 8 });
-        QuestionAnswers.Add(Questions[7], new List<float> { 71, 64, 89, 80 });
-        QuestionAnswers.Add(Questions[8], new List<float> { 4, 3, 6, 8 });
+        QuestionAnswers.Add(Questions[0], new List<float> { 9, 3, 9, 27, 16 });
+        QuestionAnswers.Add(Questions[1], new List<float> { 42, 36, 40, 42, 44 });
+        QuestionAnswers.Add(Questions[2], new List<float> { 41, 50, 38, 46, 41 });
+        QuestionAnswers.Add(Questions[3], new List<float> { 0.64f, 0.60f, 0.64f, 0.65f, 0.66f });
+        QuestionAnswers.Add(Questions[4], new List<float> { 99, 100, 50, 49, 99 });
+        QuestionAnswers.Add(Questions[5], new List<float> { 22, 20, 22, 24, 23 });
+        QuestionAnswers.Add(Questions[6], new List<float> { 10, 21, 12, 10, 8 });
+        QuestionAnswers.Add(Questions[7], new List<float> { 71, 71, 64, 89, 80 });
+        QuestionAnswers.Add(Questions[8], new List<float> { 6, 4, 3, 6, 8 });
 
-        whiteBoard.UpdateQuestion(QuestionAnswers, Questions[4]);
+
+        shuffledIndices = new List<int>();
+        int indexa = 0;
+        foreach(string question in Questions)
+        {
+            shuffledIndices.Add(indexa);
+            indexa++;
+        }
+        //Shuffle indices.
+        shuffledIndices = shuffledIndices.OrderBy(x => Random.value).ToList();
+        //Get the current shuffled index.
+        shuffledCurrentQuestionIndex = shuffledIndices[currentQuestionindex];
+        //Get the current question
+        currentQuestionString = Questions[shuffledCurrentQuestionIndex];
+        //Update question.
+        whiteBoard.UpdateQuestion(QuestionAnswers, currentQuestionString);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        ResetTransform resetter = collision.gameObject.GetComponent<ResetTransform>();
+        resetter.DoResetTransform();
+        Debug.Log("Answer Submitted!");
+        float answer = float.Parse(collision.gameObject.GetComponentInChildren<TextMeshProUGUI>().text);
+        GradeQuestion(answer);
+        //NetworkManager.SubmitAnswer(answer)
+    }
+
+    public void GradeQuestion(float answer)
+    {
+        //Access answers.
+        List<float> answers = (List<float>)QuestionAnswers[currentQuestionString];
+        if(answers[0] == answer)
+        {
+            score += 1;
+        }
+        scoreText.text = "Score: " + score.ToString();
+        currentQuestionindex += 1;
+        if(currentQuestionindex == QuestionAnswers.Count)
+        {
+            finalCanvas.SetActive(true);
+            finalCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Game Over! \n Final Score \n " + (((float)(score / (float)Questions.Count))*100f).ToString().Substring(0,4) + "%";
+        }
+        else
+        {
+            //Get the current shuffled index.
+            shuffledCurrentQuestionIndex = shuffledIndices[currentQuestionindex];
+            //Get the current question
+            currentQuestionString = Questions[shuffledCurrentQuestionIndex];
+            //Update question.
+            whiteBoard.UpdateQuestion(QuestionAnswers, currentQuestionString);
+        }
     }
 }

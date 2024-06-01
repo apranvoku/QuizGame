@@ -16,7 +16,7 @@ public class QuestionDisplay : MonoBehaviour
     public void UpdateQuestion(Hashtable QuestionAnswers, string currentQuestion)
     {
         questionText.text = currentQuestion;
-        List<int> indices = new List<int> { 0, 1, 2, 3 }; //Shuffle choices.
+        List<int> indices = new List<int> { 1, 2, 3, 4 }; //Shuffle choices.
         indices = indices.OrderBy(x => Random.value).ToList();
         
         List<float> choices = (List<float>)QuestionAnswers[currentQuestion];
