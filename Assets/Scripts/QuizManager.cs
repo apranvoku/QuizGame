@@ -27,11 +27,13 @@ public class Response
 
 public class QuizManager : MonoBehaviour
 {
+    private Response currentResponse;
     public TextMeshProUGUI scoreText;
     public List<string> Questions;
     public Hashtable QuestionAnswers;
     public QuestionDisplay whiteBoard;
     public int prevRound;
+    private int score;
 
     public GameObject finishedCanvas;
     public GameObject WaitingForQuestionCanvas;
@@ -70,6 +72,16 @@ public class QuizManager : MonoBehaviour
         resetter.DoResetTransform();
         Debug.Log("Answer Submitted!");
         float answer = float.Parse(collision.gameObject.GetComponentInChildren<TextMeshProUGUI>().text);
+        if(answer - currentResponse.c_question.answer < 0.001f)
+        {
+            score++;
+            scoreText.text = score.ToString();
+            WaitingForQuestionCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Correct! \n Waiting for next question...";
+        }
+        else
+        {
+            WaitingForQuestionCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Wrong! \n Waiting for next question...";
+        }
         WaitingForQuestionCanvas.SetActive(true);
         StartCoroutine(SendResponse(answer));
     }
@@ -98,11 +110,10 @@ public class QuizManager : MonoBehaviour
 
                 // Deserialize JSON data into Person object
                 Response response = JsonUtility.FromJson<Response>(jsonData);
-
+                currentResponse = response;
                 // Access fields
                 Question c_question = response.c_question;
                 int round = response.round;
-                int score = response.score;
                 scoreText.text = score.ToString();
                 bool started = response.started;
                 bool finished = response.finished;
