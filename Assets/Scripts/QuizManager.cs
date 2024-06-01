@@ -140,7 +140,7 @@ public class QuizManager : MonoBehaviour
 
         // Create a new form
         WWWForm form = new WWWForm();
-        form.AddField("identifier", SystemInfo.deviceUniqueIdentifier);
+        form.AddField("identifier", "Q4");
         form.AddField("answer", answer.ToString());
 
 

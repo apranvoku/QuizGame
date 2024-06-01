@@ -10,14 +10,8 @@ public class DeviceNameGetter : MonoBehaviour
     public string deviceUniqueIdentifier;
     void Start()
     {
-        StartCoroutine(WaitForDetect());
-
-    }
-    public IEnumerator WaitForDetect()
-    {
-        yield return new WaitUntil(() => SystemInfo.deviceUniqueIdentifier != null);
-        deviceUniqueIdentifier = SystemInfo.deviceUniqueIdentifier;
         StartCoroutine(PassToServer());
+
     }
 
     public IEnumerator PassToServer()
@@ -26,7 +20,7 @@ public class DeviceNameGetter : MonoBehaviour
         string url = "https://game.incntr.vladb.xyz/join";
 
         // String to send
-        string data = deviceUniqueIdentifier;
+        string data = "Q4";
 
         // Create a new form
         WWWForm form = new WWWForm();
