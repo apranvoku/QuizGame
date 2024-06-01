@@ -90,7 +90,7 @@ public class QuizManager : MonoBehaviour
     public IEnumerator GetNewResponse()
     {
         // URL to request JSON data from
-        string url = "http://10.2.2.238:5000/gs";
+        string url = "https://game.incntr.vladb.xyz/gs";
 
         // Send a GET request to the URL
         using (UnityWebRequest www = UnityWebRequest.Get(url))
@@ -136,7 +136,7 @@ public class QuizManager : MonoBehaviour
     public IEnumerator SendResponse(float answer)
     {
         // URL to send the string to
-        string url = "http://10.2.2.238:5000/answer";
+        string url = "https://game.incntr.vladb.xyz/answer";
 
         // Create a new form
         WWWForm form = new WWWForm();

@@ -23,7 +23,7 @@ public class DeviceNameGetter : MonoBehaviour
     public IEnumerator PassToServer()
     {
         // URL to send the string to
-        string url = "http://10.2.2.238:5000/join";
+        string url = "https://game.incntr.vladb.xyz/join";
 
         // String to send
         string data = deviceUniqueIdentifier;
