@@ -13,17 +13,15 @@ public class QuestionDisplay : MonoBehaviour
     public TextMeshProUGUI questionText;
 
     // Start is called before the first frame update
-    public void UpdateQuestion(Hashtable QuestionAnswers, string currentQuestion)
+    public void UpdateQuestion(float[]answers, string currentQuestion)
     {
         questionText.text = currentQuestion;
-        List<int> indices = new List<int> { 1, 2, 3, 4 }; //Shuffle choices.
+        List<int> indices = new List<int> { 0, 1, 2, 3 }; //Shuffle choices.
         indices = indices.OrderBy(x => Random.value).ToList();
         
-        List<float> choices = (List<float>)QuestionAnswers[currentQuestion];
-
-        ChoiceA.SetChoice(choices[indices[0]].ToString());
-        ChoiceB.SetChoice(choices[indices[1]].ToString());
-        ChoiceC.SetChoice(choices[indices[2]].ToString());
-        ChoiceD.SetChoice(choices[indices[3]].ToString());
+        ChoiceA.SetChoice(answers[indices[0]].ToString());
+        ChoiceB.SetChoice(answers[indices[1]].ToString());
+        ChoiceC.SetChoice(answers[indices[2]].ToString());
+        ChoiceD.SetChoice(answers[indices[3]].ToString());
     }
 }
